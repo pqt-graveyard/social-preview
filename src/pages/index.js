@@ -16,8 +16,8 @@ export default () => {
   return (
     <Fragment>
       <Layout>
-        <div className="flex flex-row">
-          <div className="w-1/4 p-4 pl-8">
+        <div className="flex flex-col-reverse md:flex-row">
+          <div className="p-4 md:pl-8 md:w-1/4">
             <div>
               <div>
                 <fieldset>
