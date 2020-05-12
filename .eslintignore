@@ -9,5 +9,6 @@
 # Except these sources for the workspace
 !/components
 !/data
+!/hooks
 !/pages
-!/styles
+# !/styles
