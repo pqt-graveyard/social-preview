@@ -19,14 +19,19 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
   const output = path.join(path.join(process.cwd(), 'public', 'generated', 'github', repoOwner, `${repoName}.jpg`));
 
   /**
-   * Base Image Template
+   * Image Templates
    */
-  const image = await Jimp.read(path.join(process.cwd(), 'public', 'generated', 'base.jpg'));
+  const baseImage = await Jimp.read(path.join(process.cwd(), 'public', 'generated', 'base.png'));
+  const githubLogo = await Jimp.read(path.join(process.cwd(), 'public', 'generated', 'github-logo.png'));
+  const codercat = await (await Jimp.read(path.join(process.cwd(), 'public', 'generated', 'codercat.png'))).resize(
+    300,
+    300
+  );
 
   /**
    * Font family used for writing
    */
-  const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
+  const font = await Jimp.loadFont(Jimp.FONT_SANS_64_BLACK);
 
   /**
    * Dimensions
@@ -39,11 +44,22 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
    */
   const PADDING = 40;
 
-  const generatedImage = await image
+  const generatedImage = baseImage
     .resize(WIDTH, HEIGHT)
-    .print(font, PADDING, 140 + PADDING, repoName, WIDTH - PADDING * 2);
+    .print(
+      font,
+      PADDING,
+      368,
+      {
+        text: repoName,
+        alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
+      },
+      WIDTH - PADDING * 2,
+      HEIGHT - PADDING * 2
+    )
+    .composite(githubLogo, 576, 190);
 
   generatedImage.writeAsync(output);
 
-  response.status(200).json(output);
+  response.status(200).json({ data: await generatedImage.getBase64Async(Jimp.MIME_PNG) });
 };
