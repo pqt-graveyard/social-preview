@@ -59,7 +59,7 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
     )
     .composite(githubLogo, 576, 190);
 
-  generatedImage.writeAsync(output);
+  // generatedImage.writeAsync(output);
 
   response.status(200).json({ data: await generatedImage.getBase64Async(Jimp.MIME_PNG) });
 };
