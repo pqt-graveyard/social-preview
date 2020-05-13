@@ -11,7 +11,7 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
   /**
    * Preferred colors to use
    */
-  const colors = request.query.colors as string[];
+  // const colors = request.query.colors as string[];
 
   /**
    * Output Location
@@ -23,10 +23,10 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
    */
   const baseImage = await Jimp.read(path.join(process.cwd(), 'public', 'generated', 'base.png'));
   const githubLogo = await Jimp.read(path.join(process.cwd(), 'public', 'generated', 'github-logo.png'));
-  const codercat = await (await Jimp.read(path.join(process.cwd(), 'public', 'generated', 'codercat.png'))).resize(
-    300,
-    300
-  );
+  // const codercat = await (await Jimp.read(path.join(process.cwd(), 'public', 'generated', 'codercat.png'))).resize(
+  //   300,
+  //   300
+  // );
 
   /**
    * Font family used for writing
