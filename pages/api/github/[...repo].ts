@@ -14,11 +14,6 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
   // const colors = request.query.colors as string[];
 
   /**
-   * Output Location
-   */
-  const output = path.join(path.join(process.cwd(), 'public', 'generated', 'github', repoOwner, `${repoName}.jpg`));
-
-  /**
    * GitHub Repository API Response
    */
   const repo = await (await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}`)).json();
@@ -39,10 +34,6 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
    */
   const baseImage = await Jimp.read(path.join(process.cwd(), 'public', 'generated', 'base.png'));
   const githubLogo = await Jimp.read(path.join(process.cwd(), 'public', 'generated', 'github-logo.png'));
-  // const codercat = await (await Jimp.read(path.join(process.cwd(), 'public', 'generated', 'codercat.png'))).resize(
-  //   300,
-  //   300
-  // );
 
   /**
    * Font family used for writing
@@ -86,8 +77,6 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
       HEIGHT - PADDING * 2
     )
     .composite(githubLogo, 576, 190);
-
-  generatedImage.writeAsync(output);
 
   response.status(200).json({
     data: {

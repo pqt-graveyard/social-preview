@@ -60,107 +60,99 @@ export default (): ReactElement => {
 
           <form onSubmit={onSubmit}>
             <div className="space-y-4">
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium leading-5 text-gray-700">
-                  Owner
-                </label>
-                <div className="mt-1 relative rounded-md shadow-sm">
-                  <input
-                    className={classNames([
-                      'form-input block w-full pr-10 sm:text-sm sm:leading-5',
-                      errors?.owner
-                        ? 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-300 focus:shadow-outline-red'
-                        : 'text-gray-700',
-                    ])}
-                    placeholder="Owner / Org"
-                    name="owner"
-                    ref={register({
-                      required: {
-                        value: true,
-                        message: 'Owner (or Organization) is required',
-                      },
-                    })}
-                    onChange={handleOwnerChange}
-                    disabled={isSubmitting}
-                    defaultValue={owner}
-                  />
+              <div className="flex flex-row w-full space-x-8">
+                <div className="flex-auto">
+                  <label htmlFor="owner" className="block text-sm font-medium leading-5 text-gray-700">
+                    Owner
+                  </label>
+                  <div className="mt-1 relative rounded-md shadow-sm">
+                    <input
+                      className={classNames([
+                        'form-input block w-full pr-10 sm:text-sm sm:leading-5',
+                        errors?.owner
+                          ? 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-300 focus:shadow-outline-red'
+                          : 'text-gray-700',
+                      ])}
+                      placeholder="Owner / Org"
+                      name="owner"
+                      ref={register({
+                        required: {
+                          value: true,
+                          message: 'Owner (or Organization) is required',
+                        },
+                      })}
+                      onChange={handleOwnerChange}
+                      disabled={isSubmitting}
+                      defaultValue={owner}
+                    />
+
+                    {errors?.owner && (
+                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path
+                            fillRule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                    )}
+                  </div>
 
                   {errors?.owner && (
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                          fillRule="evenodd"
-                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </div>
+                    <p className="mt-2 text-sm text-red-600" id="email-error">
+                      {(errors?.owner as FieldError)?.message}
+                    </p>
                   )}
                 </div>
 
-                {errors?.owner && (
-                  <p className="mt-2 text-sm text-red-600" id="email-error">
-                    {(errors?.owner as FieldError)?.message}
-                  </p>
-                )}
-              </div>
+                <div className="flex-auto">
+                  <label htmlFor="repo" className="block text-sm font-medium leading-5 text-gray-700">
+                    Repository
+                  </label>
+                  <div className="mt-1 relative rounded-md shadow-sm">
+                    <input
+                      className={classNames([
+                        'form-input block w-full pr-10 sm:text-sm sm:leading-5',
+                        errors?.repo
+                          ? 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-300 focus:shadow-outline-red'
+                          : 'text-gray-700',
+                      ])}
+                      placeholder="Repository"
+                      name="repo"
+                      ref={register({
+                        required: {
+                          value: true,
+                          message: 'Repository is required',
+                        },
+                      })}
+                      onChange={handleRepoChange}
+                      disabled={isSubmitting}
+                      defaultValue={repo}
+                    />
 
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium leading-5 text-gray-700">
-                  Repository
-                </label>
-                <div className="mt-1 relative rounded-md shadow-sm">
-                  <input
-                    className={classNames([
-                      'form-input block w-full pr-10 sm:text-sm sm:leading-5',
-                      errors?.owner
-                        ? 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-300 focus:shadow-outline-red'
-                        : 'text-gray-700',
-                    ])}
-                    placeholder="Repository"
-                    name="repo"
-                    ref={register({
-                      required: {
-                        value: true,
-                        message: 'Repository is required',
-                      },
-                    })}
-                    onChange={handleRepoChange}
-                    disabled={isSubmitting}
-                    defaultValue={repo}
-                  />
+                    {errors?.repo && (
+                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path
+                            fillRule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                    )}
+                  </div>
 
                   {errors?.repo && (
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                          fillRule="evenodd"
-                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </div>
+                    <p className="mt-2 text-sm text-red-600" id="email-error">
+                      {(errors?.repo as FieldError)?.message}
+                    </p>
                   )}
                 </div>
-
-                {errors?.repo && (
-                  <p className="mt-2 text-sm text-red-600" id="email-error">
-                    {(errors?.repo as FieldError)?.message}
-                  </p>
-                )}
               </div>
 
               <div className="space-x-4">
-                {/* <span className="inline-flex rounded-md shadow-sm">
-                <button
-                  type="submit"
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
-                  disabled={isSubmitting || !isValid}
-                >
-                  Generate
-                </button>
-              </span> */}
-
                 <span className="inline-flex rounded-md shadow-sm">
                   <button
                     type="submit"
