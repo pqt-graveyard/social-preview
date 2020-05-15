@@ -40,28 +40,34 @@ export default (): ReactElement => {
     const response = await fetch(`/api/github/${owner}/${repo}`);
     const { data } = await response.json();
 
-    setPreview(data.image);
-    setRepoId(data.repo.id);
+    if (!data.error) {
+      setPreview(data.image);
+      setRepoId(data.repo.id);
+    }
   });
 
   return (
     <Layout>
       {/* <Preview  /> */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
         <div className="max-w-3xl mx-auto">
           <div
             className={classNames([
-              'inline-flex rounded-md shadow-sm rounded border border-gray-200 overflow-hidden transition-opacity',
+              'inline-flex rounded-md shadow-sm rounded border border-gray-300 bg-gray-100 p-3 overflow-hidden transition-opacity',
               isSubmitting && 'opacity-50',
             ])}
           >
-            <img src={preview} style={{ maxWidth: 1280, maxHeight: 640 }} className="w-full" />
+            <img
+              src={preview}
+              style={{ maxWidth: 1280, maxHeight: 640 }}
+              className="w-full rounded border bg-gray-300"
+            />
           </div>
 
           <form onSubmit={onSubmit}>
-            <div className="space-y-4">
+            <div className="space-y-4 pt-8">
               <div className="flex flex-row w-full space-x-8">
-                <div className="flex-auto">
+                <div className="flex-1">
                   <label htmlFor="owner" className="block text-sm font-medium leading-5 text-gray-700">
                     Owner
                   </label>
@@ -101,7 +107,7 @@ export default (): ReactElement => {
                   )}
                 </div>
 
-                <div className="flex-auto">
+                <div className="flex-1">
                   <label htmlFor="repo" className="block text-sm font-medium leading-5 text-gray-700">
                     Repository
                   </label>
@@ -165,6 +171,44 @@ export default (): ReactElement => {
               </div>
             </div>
           </form>
+        </div>
+      </div>
+
+      <div className="fixed inset-0 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end hidden">
+        {/* <!--
+    Notification panel, show/hide based on alert state.
+
+    Entering: "transform ease-out duration-300 transition"
+      From: "translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
+      To: "translate-y-0 opacity-100 sm:translate-x-0"
+    Leaving: "transition ease-in duration-100"
+      From: "opacity-100"
+      To: "opacity-0"
+  --> */}
+        <div className="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto">
+          <div className="rounded-lg shadow-xs overflow-hidden">
+            <div className="p-4">
+              <div className="flex items-center">
+                <div className="w-0 flex-1 flex justify-between">
+                  <p className="w-0 flex-1 text-sm leading-5 font-medium text-gray-900">Discussion archived</p>
+                  <button className="ml-3 flex-shrink-0 text-sm leading-5 font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150">
+                    Undo
+                  </button>
+                </div>
+                <div className="ml-4 flex-shrink-0 flex">
+                  <button className="inline-flex text-gray-400 focus:outline-none focus:text-gray-500 transition ease-in-out duration-150">
+                    <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path
+                        fillRule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </Layout>
