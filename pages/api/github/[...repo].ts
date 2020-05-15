@@ -1,5 +1,4 @@
 import Jimp from 'jimp';
-import path from 'path';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async (request: NextApiRequest, response: NextApiResponse): Promise<void> => {
