@@ -37,8 +37,12 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
   /**
    * Font family used for writing
    */
-  const font = await Jimp.loadFont(Jimp.FONT_SANS_64_BLACK);
-  const fontSm = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
+  const font = await Jimp.loadFont(
+    'https://unpkg.com/@jimp/plugin-print@0.10.3/fonts/open-sans/open-sans-64-black/open-sans-64-black.fnt'
+  );
+  const fontSm = await Jimp.loadFont(
+    'https://unpkg.com/@jimp/plugin-print@0.10.3/fonts/open-sans/open-sans-32-black/open-sans-32-black.fnt'
+  );
 
   /**
    * Dimensions
