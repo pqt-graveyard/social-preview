@@ -42,142 +42,148 @@ export default (): ReactElement => {
 
     setPreview(data.image);
     setRepoId(data.repo.id);
-
-    // console.log(owner, repo);
-    // console.log(data);
-    // console.log(data.image);
   });
 
   return (
     <Layout>
       {/* <Preview  /> */}
-      <div className="container">
-        <div
-          className={classNames([
-            'inline-flex rounded-md shadow-sm rounded border border-gray-200 overflow-hidden transition-opacity',
-            isSubmitting && 'opacity-50',
-          ])}
-        >
-          <img src={preview} style={{ maxWidth: 1280, maxHeight: 640 }} />
-        </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto">
+          <div
+            className={classNames([
+              'inline-flex rounded-md shadow-sm rounded border border-gray-200 overflow-hidden transition-opacity',
+              isSubmitting && 'opacity-50',
+            ])}
+          >
+            <img src={preview} style={{ maxWidth: 1280, maxHeight: 640 }} className="w-full" />
+          </div>
 
-        <form onSubmit={onSubmit}>
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium leading-5 text-gray-700">
-                Owner
-              </label>
-              <div className="mt-1 relative rounded-md shadow-sm">
-                <input
-                  className={classNames([
-                    'form-input block w-full pr-10 sm:text-sm sm:leading-5',
-                    errors?.owner
-                      ? 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-300 focus:shadow-outline-red'
-                      : 'text-gray-700',
-                  ])}
-                  placeholder="Owner / Org"
-                  name="owner"
-                  ref={register({
-                    required: {
-                      value: true,
-                      message: 'Owner (or Organization) is required',
-                    },
-                  })}
-                  onChange={handleOwnerChange}
-                  disabled={isSubmitting}
-                  defaultValue={owner}
-                />
+          <form onSubmit={onSubmit}>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium leading-5 text-gray-700">
+                  Owner
+                </label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    className={classNames([
+                      'form-input block w-full pr-10 sm:text-sm sm:leading-5',
+                      errors?.owner
+                        ? 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-300 focus:shadow-outline-red'
+                        : 'text-gray-700',
+                    ])}
+                    placeholder="Owner / Org"
+                    name="owner"
+                    ref={register({
+                      required: {
+                        value: true,
+                        message: 'Owner (or Organization) is required',
+                      },
+                    })}
+                    onChange={handleOwnerChange}
+                    disabled={isSubmitting}
+                    defaultValue={owner}
+                  />
+
+                  {errors?.owner && (
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                      <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                          fillRule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                  )}
+                </div>
 
                 {errors?.owner && (
-                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                    <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path
-                        fillRule="evenodd"
-                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
+                  <p className="mt-2 text-sm text-red-600" id="email-error">
+                    {(errors?.owner as FieldError)?.message}
+                  </p>
                 )}
               </div>
 
-              {errors?.owner && (
-                <p className="mt-2 text-sm text-red-600" id="email-error">
-                  {(errors?.owner as FieldError)?.message}
-                </p>
-              )}
-            </div>
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium leading-5 text-gray-700">
+                  Repository
+                </label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    className={classNames([
+                      'form-input block w-full pr-10 sm:text-sm sm:leading-5',
+                      errors?.owner
+                        ? 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-300 focus:shadow-outline-red'
+                        : 'text-gray-700',
+                    ])}
+                    placeholder="Repository"
+                    name="repo"
+                    ref={register({
+                      required: {
+                        value: true,
+                        message: 'Repository is required',
+                      },
+                    })}
+                    onChange={handleRepoChange}
+                    disabled={isSubmitting}
+                    defaultValue={repo}
+                  />
 
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium leading-5 text-gray-700">
-                Repository
-              </label>
-              <div className="mt-1 relative rounded-md shadow-sm">
-                <input
-                  className={classNames([
-                    'form-input block w-full pr-10 sm:text-sm sm:leading-5',
-                    errors?.owner
-                      ? 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-300 focus:shadow-outline-red'
-                      : 'text-gray-700',
-                  ])}
-                  placeholder="Repository"
-                  name="repo"
-                  ref={register({
-                    required: {
-                      value: true,
-                      message: 'Repository is required',
-                    },
-                  })}
-                  onChange={handleRepoChange}
-                  disabled={isSubmitting}
-                  defaultValue={repo}
-                />
+                  {errors?.repo && (
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                      <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                          fillRule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                  )}
+                </div>
 
                 {errors?.repo && (
-                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                    <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path
-                        fillRule="evenodd"
-                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
+                  <p className="mt-2 text-sm text-red-600" id="email-error">
+                    {(errors?.repo as FieldError)?.message}
+                  </p>
                 )}
               </div>
 
-              {errors?.repo && (
-                <p className="mt-2 text-sm text-red-600" id="email-error">
-                  {(errors?.repo as FieldError)?.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <span className="inline-flex rounded-md shadow-sm">
+              <div className="space-x-4">
+                {/* <span className="inline-flex rounded-md shadow-sm">
                 <button
                   type="submit"
-                  className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:text-gray-800 active:bg-gray-50 transition ease-in-out duration-150"
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
                   disabled={isSubmitting || !isValid}
                 >
                   Generate
                 </button>
-              </span>
+              </span> */}
 
-              {repoId && (
                 <span className="inline-flex rounded-md shadow-sm">
+                  <button
+                    type="submit"
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+                    disabled={isSubmitting || !isValid}
+                  >
+                    Generate
+                  </button>
+                </span>
+
+                {repoId && (
                   <a
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-50 focus:outline-none focus:border-indigo-300 focus:shadow-outline-indigo active:bg-indigo-200 transition ease-in-out duration-150"
                     href={preview}
                     download={repoId}
-                    className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:text-gray-800 active:bg-gray-50 transition ease-in-out duration-150"
                   >
                     Download
                   </a>
-                </span>
-              )}
+                )}
+              </div>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </Layout>
   );
