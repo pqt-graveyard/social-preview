@@ -18,8 +18,8 @@ export default (): ReactElement => {
   }, [preview]);
 
   const validationSchema = yup.object().shape({
-    owner: yup.string().required(),
-    repo: yup.string().required(),
+    owner: yup.string().required('Owner (or Organization) is required'),
+    repo: yup.string().required('Repository is required'),
   });
 
   const {
@@ -75,12 +75,7 @@ export default (): ReactElement => {
                       ])}
                       placeholder="Owner / Org"
                       name="owner"
-                      ref={register({
-                        required: {
-                          value: true,
-                          message: 'Owner (or Organization) is required',
-                        },
-                      })}
+                      ref={register()}
                       onChange={handleOwnerChange}
                       disabled={isSubmitting}
                       defaultValue={owner}
@@ -120,12 +115,7 @@ export default (): ReactElement => {
                       ])}
                       placeholder="Repository"
                       name="repo"
-                      ref={register({
-                        required: {
-                          value: true,
-                          message: 'Repository is required',
-                        },
-                      })}
+                      ref={register()}
                       onChange={handleRepoChange}
                       disabled={isSubmitting}
                       defaultValue={repo}

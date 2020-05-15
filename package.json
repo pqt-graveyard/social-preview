@@ -13,6 +13,7 @@
     "type-check": "tsc"
   },
   "dependencies": {
+    "@jimp/plugin-print": "^0.10.3",
     "@tailwindcss/ui": "^0.2.2",
     "classnames": "^2.2.6",
     "jimp": "^0.10.3",
