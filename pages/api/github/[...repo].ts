@@ -17,11 +17,6 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
      * GitHub Repository API Response
      */
     const githubResponse = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}`);
-
-    if (githubResponse.status === 404) {
-      throw new Error('GitHub Repository does not exist');
-    }
-
     const repo = await githubResponse.json();
 
     /**
