@@ -49,7 +49,7 @@ export default (): ReactElement => {
   return (
     <Layout>
       {/* <Preview  /> */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8">
         <div className="max-w-3xl mx-auto">
           <div
             className={classNames([
@@ -61,8 +61,8 @@ export default (): ReactElement => {
           </div>
 
           <form onSubmit={onSubmit}>
-            <div className="space-y-4 pt-8">
-              <div className="flex flex-row w-full space-x-8">
+            <div className="space-y-4 pt-6">
+              <div className="flex flex-col md:flex-row w-full space-y-4 md:space-x-8 md:space-y-0">
                 <div className="flex-1">
                   <label htmlFor="owner" className="block text-sm font-medium leading-5 text-gray-700">
                     Owner
@@ -172,24 +172,33 @@ export default (): ReactElement => {
 
       <div className="fixed inset-0 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end hidden">
         {/* <!--
-    Notification panel, show/hide based on alert state.
+          Notification panel, show/hide based on alert state.
 
-    Entering: "transform ease-out duration-300 transition"
-      From: "translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
-      To: "translate-y-0 opacity-100 sm:translate-x-0"
-    Leaving: "transition ease-in duration-100"
-      From: "opacity-100"
-      To: "opacity-0"
-  --> */}
+          Entering: "transform ease-out duration-300 transition"
+            From: "translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
+            To: "translate-y-0 opacity-100 sm:translate-x-0"
+          Leaving: "transition ease-in duration-100"
+            From: "opacity-100"
+            To: "opacity-0"
+        --> */}
         <div className="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto">
           <div className="rounded-lg shadow-xs overflow-hidden">
             <div className="p-4">
-              <div className="flex items-center">
-                <div className="w-0 flex-1 flex justify-between">
-                  <p className="w-0 flex-1 text-sm leading-5 font-medium text-gray-900">Discussion archived</p>
-                  <button className="ml-3 flex-shrink-0 text-sm leading-5 font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150">
-                    Undo
-                  </button>
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <svg className="h-6 w-6 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clipRule="evenodd"
+                      fillRule="evenodd"
+                    ></path>
+                  </svg>
+                </div>
+                <div className="ml-3 w-0 flex-1 pt-0.5">
+                  <p className="text-sm leading-5 font-medium text-gray-900">Error fetching repository details</p>
+                  <p className="mt-1 text-sm leading-5 text-gray-600">
+                    You must enter valid repository details. The repository must also be public.
+                  </p>
                 </div>
                 <div className="ml-4 flex-shrink-0 flex">
                   <button className="inline-flex text-gray-400 focus:outline-none focus:text-gray-500 transition ease-in-out duration-150">
