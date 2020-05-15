@@ -57,11 +57,7 @@ export default (): ReactElement => {
               isSubmitting && 'opacity-50',
             ])}
           >
-            <img
-              src={preview}
-              style={{ maxWidth: 1280, maxHeight: 640 }}
-              className="w-full rounded border bg-gray-300"
-            />
+            <img src={preview} className="w-full rounded border bg-gray-300" />
           </div>
 
           <form onSubmit={onSubmit}>
