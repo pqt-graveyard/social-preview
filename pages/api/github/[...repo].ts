@@ -32,8 +32,8 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
   /**
    * Image Templates
    */
-  const baseImage = await Jimp.read(path.join(process.cwd(), 'public', 'generated', 'base.png'));
-  const githubLogo = await Jimp.read(path.join(process.cwd(), 'public', 'generated', 'github-logo.png'));
+  const baseImage = await Jimp.read(path.join(process.cwd(), 'static/github/base.png'));
+  const githubLogo = await Jimp.read(path.join(process.cwd(), 'static/github/github-logo.png'));
 
   /**
    * Font family used for writing
