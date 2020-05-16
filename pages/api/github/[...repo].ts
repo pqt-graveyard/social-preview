@@ -3,7 +3,7 @@ import Jimp from 'jimp';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { errorMessages } from '../../../data/errorMessages';
 
-const cleanDescription = (text: string) => {
+const cleanDescription = (text: string): string => {
   return text
     .replace(new RegExp(/:.+:/, 'gi'), '')
     .replace(
@@ -29,7 +29,7 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
      * GitHub Repository API Response
      */
     const octokit = new Octokit();
-    const { data, status } = await octokit.repos.get({
+    const { data } = await octokit.repos.get({
       owner,
       repo,
     });

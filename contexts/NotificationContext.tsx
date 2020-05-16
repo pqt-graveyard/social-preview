@@ -1,4 +1,4 @@
-import React, { createContext, ReactElement } from 'react';
+import { createContext, ReactElement } from 'react';
 
 type DefaultNotificationContextValues = {
   notifications: ReactElement[];
