@@ -1,5 +1,6 @@
 import { AppProps } from 'next/app';
 import React from 'react';
+import { defaultValue, NotificationContext } from '../contexts/NotificationContext';
 import '../styles/base.css';
 import '../styles/tw.css';
 
@@ -10,7 +11,11 @@ import '../styles/tw.css';
 // }
 
 function App({ Component, pageProps }: AppProps): JSX.Element {
-  return <Component {...pageProps} />;
+  return (
+    <NotificationContext.Provider value={defaultValue}>
+      <Component {...pageProps} />
+    </NotificationContext.Provider>
+  );
 }
 
 export default App;

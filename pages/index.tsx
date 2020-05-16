@@ -3,6 +3,7 @@ import React, { ChangeEvent, ReactElement, useEffect, useState } from 'react';
 import { FieldError, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { Layout } from '../components/Layout';
+import { NotificationPortal } from '../components/notifications/NotificationPortal';
 import { defaultPreview } from '../data/defaultPreview';
 
 export default (): ReactElement => {
@@ -10,6 +11,8 @@ export default (): ReactElement => {
   const [repo, setRepo] = useState('social-preview');
   const [repoId, setRepoId] = useState('');
   const [preview, setPreview] = useState(defaultPreview);
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState('');
 
   useEffect(() => {
     if (preview === '') {
@@ -39,10 +42,18 @@ export default (): ReactElement => {
   const onSubmit = handleSubmit(async ({ owner, repo }) => {
     const response = await fetch(`/api/github/${owner}/${repo}`);
     const { data } = await response.json();
+    console.log(data);
+
+    setShowNotification(false);
+    setNotificationMessage('');
 
     if (!data.error) {
       setPreview(data.image);
-      setRepoId(data.repo.id);
+      setRepoId(data.id);
+    } else {
+      // createNotification({ message: data.error });
+      setNotificationMessage(data.error);
+      setShowNotification(true);
     }
   });
 
@@ -155,23 +166,26 @@ export default (): ReactElement => {
                   </button>
                 </span>
 
-                {repoId && (
-                  <a
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-50 focus:outline-none focus:border-indigo-300 focus:shadow-outline-indigo active:bg-indigo-200 transition ease-in-out duration-150"
-                    href={preview}
-                    download={repoId}
-                  >
-                    Download
-                  </a>
-                )}
+                <a
+                  className={classNames([
+                    'inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-50 focus:outline-none focus:border-indigo-300 focus:shadow-outline-indigo active:bg-indigo-200 transition transform ease-in-out duration-300',
+                    repoId ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4',
+                  ])}
+                  href={preview}
+                  download={`${owner}-${repo}`}
+                >
+                  Download
+                </a>
               </div>
             </div>
           </form>
         </div>
       </div>
 
-      <div className="fixed inset-0 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end hidden">
-        {/* <!--
+      {showNotification && (
+        <NotificationPortal>
+          <div className="fixed inset-0 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end">
+            {/* <!--
           Notification panel, show/hide based on alert state.
 
           Entering: "transform ease-out duration-300 transition"
@@ -181,41 +195,41 @@ export default (): ReactElement => {
             From: "opacity-100"
             To: "opacity-0"
         --> */}
-        <div className="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto">
-          <div className="rounded-lg shadow-xs overflow-hidden">
-            <div className="p-4">
-              <div className="flex items-start">
-                <div className="flex-shrink-0">
-                  <svg className="h-6 w-6 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                      clipRule="evenodd"
-                      fillRule="evenodd"
-                    ></path>
-                  </svg>
-                </div>
-                <div className="ml-3 w-0 flex-1 pt-0.5">
-                  <p className="text-sm leading-5 font-medium text-gray-900">Error fetching repository details</p>
-                  <p className="mt-1 text-sm leading-5 text-gray-600">
-                    You must enter valid repository details. The repository must also be public.
-                  </p>
-                </div>
-                <div className="ml-4 flex-shrink-0 flex">
-                  <button className="inline-flex text-gray-400 focus:outline-none focus:text-gray-500 transition ease-in-out duration-150">
-                    <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path
-                        fillRule="evenodd"
-                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </button>
+            <div className="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto">
+              <div className="rounded-lg shadow-xs overflow-hidden">
+                <div className="p-4">
+                  <div className="flex items-start">
+                    <div className="flex-shrink-0">
+                      <svg className="h-6 w-6 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                          clipRule="evenodd"
+                          fillRule="evenodd"
+                        ></path>
+                      </svg>
+                    </div>
+                    <div className="ml-3 w-0 flex-1 pt-0.5">
+                      <p className="text-sm leading-5 font-medium text-gray-900">Error fetching repository details</p>
+                      <p className="mt-1 text-sm leading-5 text-gray-600">{notificationMessage}</p>
+                    </div>
+                    <div className="ml-4 flex-shrink-0 flex">
+                      <button className="inline-flex text-gray-400 focus:outline-none focus:text-gray-500 transition ease-in-out duration-150">
+                        <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path
+                            fillRule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
+        </NotificationPortal>
+      )}
     </Layout>
   );
 };

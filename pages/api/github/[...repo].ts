@@ -1,12 +1,24 @@
+import { Octokit } from '@octokit/rest';
 import Jimp from 'jimp';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { errorMessages } from '../../../data/errorMessages';
+
+const cleanDescription = (text: string) => {
+  return text
+    .replace(new RegExp(/:.+:/, 'gi'), '')
+    .replace(
+      /([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g,
+      ''
+    )
+    .trim();
+};
 
 export default async (request: NextApiRequest, response: NextApiResponse): Promise<void> => {
   try {
     /**
      * Repository owner and name
      */
-    const [repoOwner, repoName] = request.query.repo;
+    const [owner, repo] = request.query.repo;
 
     /**
      * Preferred colors to use
@@ -16,19 +28,16 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
     /**
      * GitHub Repository API Response
      */
-    const githubResponse = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}`);
-    const repo = await githubResponse.json();
+    const octokit = new Octokit();
+    const { data, status } = await octokit.repos.get({
+      owner,
+      repo,
+    });
 
     /**
      * Description, remove GitHub-enabled emojis and actual emojis, the follow up with removing unnecessary whitespace
      */
-    const description = repo.description
-      .replace(new RegExp(/:.+:/, 'gi'), '')
-      .replace(
-        /([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g,
-        ''
-      )
-      .trim();
+    const description = cleanDescription(data.description || '');
 
     /**
      * Image Templates
@@ -64,7 +73,7 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
         PADDING,
         350,
         {
-          text: repoName,
+          text: data.name,
           alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
         },
         WIDTH - PADDING * 2,
@@ -85,16 +94,14 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
 
     response.status(200).json({
       data: {
-        description,
-        repo,
+        id: data.id,
         image: await generatedImage.getBase64Async(Jimp.MIME_PNG),
       },
     });
   } catch (error) {
-    console.error(error);
-    response.status(200).json({
+    response.status(error.status).json({
       data: {
-        error,
+        error: errorMessages[error.status],
       },
     });
   }

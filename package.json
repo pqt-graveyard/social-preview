@@ -13,6 +13,8 @@
     "type-check": "tsc"
   },
   "dependencies": {
+    "@octokit/rest": "^17.9.0",
+    "@pqt/react-components": "^0.0.0-alpha.15",
     "@tailwindcss/ui": "^0.2.2",
     "classnames": "^2.2.6",
     "jimp": "^0.10.3",
