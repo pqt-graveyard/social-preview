@@ -3,7 +3,6 @@ import React, { ChangeEvent, ReactElement, useEffect, useState } from 'react';
 import { FieldError, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { Layout } from '../components/Layout';
-import { NotificationPortal } from '../components/notifications/NotificationPortal';
 import { defaultPreview } from '../data/defaultPreview';
 
 export default (): ReactElement => {
@@ -61,7 +60,7 @@ export default (): ReactElement => {
     <Layout>
       {/* <Preview  /> */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-3xl mx-auto space-y-4">
           <div
             className={classNames([
               'inline-flex rounded-md shadow-sm rounded border border-gray-300 bg-gray-100 p-3 overflow-hidden transition-opacity',
@@ -71,8 +70,30 @@ export default (): ReactElement => {
             <img src={preview} className="w-full rounded border bg-gray-300" />
           </div>
 
+          {showNotification && (
+            <div className="rounded-md bg-red-50 p-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm leading-5 font-medium text-red-800">Error</h3>
+                  <div className="mt-2 text-sm leading-5 text-red-700">
+                    <p>{notificationMessage}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <form onSubmit={onSubmit}>
-            <div className="space-y-4 pt-6">
+            <div className="space-y-4">
               <div className="flex flex-col md:flex-row w-full space-y-4 md:space-x-8 md:space-y-0">
                 <div className="flex-1">
                   <label htmlFor="owner" className="block text-sm font-medium leading-5 text-gray-700">
@@ -181,55 +202,6 @@ export default (): ReactElement => {
           </form>
         </div>
       </div>
-
-      {showNotification && (
-        <NotificationPortal>
-          <div className="fixed inset-0 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end">
-            {/* <!--
-          Notification panel, show/hide based on alert state.
-
-          Entering: "transform ease-out duration-300 transition"
-            From: "translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
-            To: "translate-y-0 opacity-100 sm:translate-x-0"
-          Leaving: "transition ease-in duration-100"
-            From: "opacity-100"
-            To: "opacity-0"
-        --> */}
-            <div className="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto">
-              <div className="rounded-lg shadow-xs overflow-hidden">
-                <div className="p-4">
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0">
-                      <svg className="h-6 w-6 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                          clipRule="evenodd"
-                          fillRule="evenodd"
-                        ></path>
-                      </svg>
-                    </div>
-                    <div className="ml-3 w-0 flex-1 pt-0.5">
-                      <p className="text-sm leading-5 font-medium text-gray-900">Error fetching repository details</p>
-                      <p className="mt-1 text-sm leading-5 text-gray-600">{notificationMessage}</p>
-                    </div>
-                    <div className="ml-4 flex-shrink-0 flex">
-                      <button className="inline-flex text-gray-400 focus:outline-none focus:text-gray-500 transition ease-in-out duration-150">
-                        <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                          <path
-                            fillRule="evenodd"
-                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </NotificationPortal>
-      )}
     </Layout>
   );
 };
