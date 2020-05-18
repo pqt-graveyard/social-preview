@@ -4,6 +4,7 @@ import { FieldError, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { Layout } from '../components/Layout';
 import { defaultPreview } from '../data/defaultPreview';
+import { Spinner } from '../components/loaders/Spinner';
 
 export default (): ReactElement => {
   const [owner, setOwner] = useState('pqt');
@@ -62,11 +63,16 @@ export default (): ReactElement => {
         <div className="max-w-3xl mx-auto space-y-4">
           <div
             className={classNames([
-              'inline-flex rounded-md shadow-sm rounded border border-gray-300 bg-gray-100 p-3 overflow-hidden transition-opacity items-center',
+              'relative inline-flex rounded-md shadow-sm rounded border border-gray-300 bg-gray-100 p-3 overflow-hidden transition-opacity items-center',
               isSubmitting && 'opacity-50',
             ])}
           >
             <img src={preview} className="w-full rounded border bg-gray-300" />
+            {isSubmitting && (
+              <div className="absolute inset-0 flex justify-center items-center">
+                <Spinner size={60} />
+              </div>
+            )}
           </div>
 
           {showNotification && (
@@ -189,7 +195,7 @@ export default (): ReactElement => {
                 <a
                   className={classNames([
                     'inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-50 focus:outline-none focus:border-indigo-300 focus:shadow-outline-indigo active:bg-indigo-200 transition transform ease-in-out duration-300',
-                    repoId ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4',
+                    repoId ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 pointer-events-none',
                   ])}
                   href={preview}
                   download={`${owner}-${repo}`}
