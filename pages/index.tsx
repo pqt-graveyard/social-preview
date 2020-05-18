@@ -50,7 +50,6 @@ export default (): ReactElement => {
       setPreview(data.image);
       setRepoId(data.id);
     } else {
-      // createNotification({ message: data.error });
       setNotificationMessage(data.error);
       setShowNotification(true);
     }
