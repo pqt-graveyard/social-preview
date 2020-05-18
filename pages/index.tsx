@@ -198,7 +198,7 @@ export default (): ReactElement => {
                     repoId ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 pointer-events-none',
                   ])}
                   href={preview}
-                  download={`${owner}-${repo}`}
+                  download={`${owner}-${repo}.png`}
                 >
                   Download
                 </a>
