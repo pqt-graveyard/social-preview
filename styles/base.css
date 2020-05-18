@@ -1,0 +1,33 @@
+/* purgecss start ignore */
+:root {
+  overflow-x: hidden;
+  height: 100%;
+}
+
+body,
+#__next,
+.site-content {
+  display: flex;
+  flex-direction: column;
+}
+
+body,
+#__next {
+  background: #fff;
+  min-height: 100%;
+  font-weight: 400;
+  font-style: normal;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  -webkit-font-feature-settings: "pnum";
+  font-feature-settings: "pnum";
+  font-variant-numeric: proportional-nums;
+}
+
+#__next,
+.site-content {
+  flex-grow: 1;
+}
+/* purgecss end ignore */
