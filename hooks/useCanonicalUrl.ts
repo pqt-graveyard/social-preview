@@ -3,6 +3,10 @@ const trimTrailingSlash = (url: string): string => {
 };
 
 export const useCanonicalUrl = (path = '/'): URL => {
+  if (typeof process.env.APP_URL !== 'undefined') {
+    return new URL(process.env.APP_URL);
+  }
+
   if (typeof window !== 'undefined') {
     return new URL(window.location.origin + path);
   }
