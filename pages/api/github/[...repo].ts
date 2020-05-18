@@ -28,7 +28,9 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
     /**
      * GitHub Repository API Response
      */
-    const octokit = new Octokit();
+    const octokit = new Octokit({
+      auth: process.env.GITHUB_TOKEN,
+    });
     const { data } = await octokit.repos.get({
       owner,
       repo,
