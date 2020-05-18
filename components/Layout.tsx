@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import React, { Fragment, ReactElement } from 'react';
 import { useCanonicalUrl } from '../hooks/useCanonicalUrl';
 import { ComponentHTMLProps } from './types';
+import { Footer } from './Footer';
 
 interface LayoutProps extends ComponentHTMLProps {
   description?: string;
@@ -49,7 +50,7 @@ export const Layout = ({
 
       <header className="site-header"></header>
       <div className="site-content">{children}</div>
-      <footer className="site-footer"></footer>
+      <Footer />
     </Fragment>
   );
 };

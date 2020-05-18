@@ -176,7 +176,7 @@ export default (): ReactElement => {
                 </div>
               </div>
 
-              <div className="space-x-4">
+              <div className="space-x-4 pb-6">
                 <span className="inline-flex rounded-md shadow-sm">
                   <button
                     type="submit"
