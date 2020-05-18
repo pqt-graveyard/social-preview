@@ -62,7 +62,7 @@ export default (): ReactElement => {
         <div className="max-w-3xl mx-auto space-y-4">
           <div
             className={classNames([
-              'inline-flex rounded-md shadow-sm rounded border border-gray-300 bg-gray-100 p-3 overflow-hidden transition-opacity',
+              'inline-flex rounded-md shadow-sm rounded border border-gray-300 bg-gray-100 p-3 overflow-hidden transition-opacity items-center',
               isSubmitting && 'opacity-50',
             ])}
           >
