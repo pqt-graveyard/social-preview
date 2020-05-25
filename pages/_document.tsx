@@ -10,7 +10,22 @@ class MyDocument extends Document {
   render(): JSX.Element {
     return (
       <Html lang="en">
-        <Head />
+        <Head>
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+              <!-- Global site tag (gtag.js) - Google Analytics -->
+              <script async src="https://www.googletagmanager.com/gtag/js?id=UA-146393850-4"></script>
+              <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'UA-146393850-4');
+              </script>
+              `,
+            }}
+          />
+        </Head>
         <body>
           <Main />
           <NextScript />
