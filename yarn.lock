@@ -1618,13 +1618,6 @@
   resolved "https://registry.yarnpkg.com/@pqt/prettier-config/-/prettier-config-0.0.4.tgz#c1474e88e90d75ab2f240f6c73600c84c2915294"
   integrity sha512-eT7ugRV+y5f6ClF7XvfevSGsrboHbHqQyVmirGSk6PTjciGQ9Mgdy0d3Mk8+qe7kcRyJ6IZYkh54PkXb5W2PvA==
 
-"@pqt/react-components@^0.0.0-alpha.15":
-  version "0.0.0-alpha.15"
-  resolved "https://registry.yarnpkg.com/@pqt/react-components/-/react-components-0.0.0-alpha.15.tgz#5d18935af2534c0ca4199853e2b7e4c1ee061a78"
-  integrity sha512-EymzFaNxbTVkMjkiPGoeFS3dy9Uqi9Oe7rl//gYJcmbUAWUE6qdlLfecRmFXJRtjVtz7+RGB+6KwOd9veJa3Uw==
-  dependencies:
-    classnames "^2.2.6"
-
 "@samverschueren/stream-to-observable@^0.3.0":
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/@samverschueren/stream-to-observable/-/stream-to-observable-0.3.0.tgz#ecdf48d532c58ea477acfcab80348424f8d0662f"
