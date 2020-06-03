@@ -23,7 +23,7 @@ class MyDocument extends Document {
             }}
           />
         </Head>
-        <body>
+        <body className="bg-gray-100">
           <Main />
           <NextScript />
         </body>
