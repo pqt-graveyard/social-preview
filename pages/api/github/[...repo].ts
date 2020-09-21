@@ -18,6 +18,7 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
     /**
      * Repository owner and name
      */
+    const token: string | null = (request.query.token as string) || null;
     const [owner, repo, file] = request.query.repo;
     const asImage = file === 'image';
 
@@ -30,7 +31,7 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
      * GitHub Repository API Response
      */
     const octokit = new Octokit({
-      auth: process.env.GITHUB_TOKEN,
+      auth: token || process.env.GITHUB_TOKEN,
     });
     const { data } = await octokit.repos.get({
       owner,
