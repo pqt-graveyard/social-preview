@@ -7,8 +7,8 @@ import { defaultPreview } from '../data/defaultPreview';
 import { Spinner } from '../components/loaders/Spinner';
 
 export default (): ReactElement => {
-  const [owner, setOwner] = useState('pqt');
-  const [repo, setRepo] = useState('social-preview');
+  const [owner, setOwner] = useState('');
+  const [repo, setRepo] = useState('');
   const [repoId, setRepoId] = useState('');
   const [preview, setPreview] = useState(defaultPreview);
   const [showNotification, setShowNotification] = useState(false);
@@ -63,7 +63,7 @@ export default (): ReactElement => {
         <div className="max-w-3xl mx-auto space-y-4">
           <div
             className={classNames([
-              'relative inline-flex rounded-md shadow-sm rounded border border-gray-300 bg-gray-100 p-1 md:p-2 lg:p-3 overflow-hidden transition-opacity items-center',
+              'relative inline-flex shadow-sm rounded border border-gray-300 bg-gray-100 p-1 md:p-2 lg:p-3 overflow-hidden transition-opacity items-center',
               isSubmitting && 'opacity-50',
             ])}
           >
@@ -102,7 +102,7 @@ export default (): ReactElement => {
               <div className="flex flex-col md:flex-row w-full space-y-4 md:space-x-8 md:space-y-0">
                 <div className="flex-1">
                   <label htmlFor="owner" className="block text-sm font-medium leading-5 text-gray-700">
-                    Owner
+                    Owner / Organization
                   </label>
                   <div className="mt-1 relative rounded-md shadow-sm">
                     <input
@@ -112,7 +112,7 @@ export default (): ReactElement => {
                           ? 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-300 focus:shadow-outline-red'
                           : 'text-gray-700',
                       ])}
-                      placeholder="Owner / Org"
+                      placeholder="pqt"
                       name="owner"
                       ref={register()}
                       onChange={handleOwnerChange}
@@ -152,7 +152,7 @@ export default (): ReactElement => {
                           ? 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-300 focus:shadow-outline-red'
                           : 'text-gray-700',
                       ])}
-                      placeholder="Repository"
+                      placeholder="social-preview"
                       name="repo"
                       ref={register()}
                       onChange={handleRepoChange}

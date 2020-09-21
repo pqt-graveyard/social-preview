@@ -18,7 +18,8 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
     /**
      * Repository owner and name
      */
-    const [owner, repo] = request.query.repo;
+    const [owner, repo, file] = request.query.repo;
+    const asImage = file === 'image';
 
     /**
      * Preferred colors to use
@@ -94,12 +95,17 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
       )
       .composite(githubLogo, 576, 190);
 
-    response.status(200).json({
-      data: {
-        id: data.id,
-        image: await generatedImage.getBase64Async(Jimp.MIME_PNG),
-      },
-    });
+    if (asImage) {
+      response.setHeader('Content-Type', 'image/png');
+      response.end(await generatedImage.getBufferAsync(Jimp.MIME_PNG));
+    } else {
+      response.status(200).json({
+        data: {
+          id: data.id,
+          image: await generatedImage.getBase64Async(Jimp.MIME_PNG),
+        },
+      });
+    }
   } catch (error) {
     response.status(error.status).json({
       data: {
