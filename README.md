@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://social-preview.pqt.dev">
-    <img alt="Social Preview" src="https://github.com/pqt/social-preview/blob/master/.github/images/248729857.png" width="100%" />
+    <img alt="Social Preview" src="https://github.com/pqt/social-preview/blob/main/.github/images/248729857.png" width="100%" />
   </a>
 </p>
 
