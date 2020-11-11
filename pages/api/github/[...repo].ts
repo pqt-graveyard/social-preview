@@ -3,7 +3,6 @@ import { Octokit } from '@octokit/rest';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { defaultColors } from '../../../data/defaultColors';
 import { generateQueryParameterErrorMessage } from '../../../data/errorMessages';
-import { weightedRandom as weightedRandomFn, Item as WeightedRandomItem } from '@pqt/weighted-random';
 import seedrandom from 'seedrandom';
 import { languageColors } from '../../../data/languageColors';
 
@@ -130,9 +129,8 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
 
     /**
      * Convert the languages byte count value into a relative percentage
-     * It's also a format that the `@pqt/weighted-random` library accepts for later
      */
-    const languages: WeightedRandomItem[] = intialLanguagesDataArray.map(([languageKey, value]) => {
+    const languages: [string, number][] = intialLanguagesDataArray.map(([languageKey, value]) => {
       return [languageKey, Math.floor((value / totalLanguageCounter) * 100)];
     });
 
