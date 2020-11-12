@@ -54,6 +54,9 @@ export default function IndexPage(): ReactElement {
   const handleCustomTokenChange = (event: ChangeEvent<HTMLInputElement>): void => {
     setCustomToken(event.currentTarget.value);
   };
+  const handleCustomSeedChange = (event: ChangeEvent<HTMLInputElement>): void => {
+    setCustomSeed(event.currentTarget.value);
+  };
 
   const onSubmit = handleSubmit(async ({ owner, repo, token }) => {
     let endpoint = `/api/github/${owner}/${repo}`;
@@ -204,6 +207,29 @@ export default function IndexPage(): ReactElement {
             <div className="bg-white lg:min-w-0 lg:flex-1">
               <div className="pl-4 pr-6 pt-4 pb-4 border-t border-gray-200 sm:pl-6 lg:pl-8 xl:pl-6 xl:pt-6 xl:border-t-0">
                 <Preview />
+
+                {showNotification && (
+                  <div className="mt-2 rounded-md bg-red-50 p-4">
+                    <div className="flex">
+                      <div className="flex-shrink-0">
+                        <svg className="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <div className="ml-3">
+                        <h3 className="text-sm leading-5 font-medium text-red-800">Error</h3>
+                        <div className="mt-2 text-sm leading-5 text-red-700">
+                          <p>{notificationMessage}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <form className="divide-y divide-gray-200 lg:col-span-9" onSubmit={onSubmit}>
                   {/* <!-- Profile section --> */}
                   <div className="py-6 px-1 space-y-6 lg:pb-8">
@@ -517,10 +543,7 @@ export default function IndexPage(): ReactElement {
                           </div>
                           {seed && (
                             <div className="col-span-12">
-                              <label
-                                htmlFor="customToken"
-                                className="block text-sm font-medium leading-5 text-gray-700"
-                              >
+                              <label htmlFor="customSeed" className="block text-sm font-medium leading-5 text-gray-700">
                                 Custom Seed
                               </label>
                               <div className="mt-1 relative rounded-md shadow-sm">
@@ -533,7 +556,7 @@ export default function IndexPage(): ReactElement {
                                   ])}
                                   name="customSeed"
                                   ref={register()}
-                                  onChange={handleCustomTokenChange}
+                                  onChange={handleCustomSeedChange}
                                   disabled={isSubmitting}
                                   defaultValue={customSeed}
                                 />

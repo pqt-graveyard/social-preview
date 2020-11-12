@@ -3,7 +3,7 @@ type ErrorMessageType = {
 };
 
 export const errorMessages: ErrorMessageType = {
-  404: 'Make sure you entered the correct details. The repository must also be public.',
+  404: 'Make sure you entered the correct details. The repository must either be public, or (if one is provided) accessible with the personal access token.',
 };
 
 /**

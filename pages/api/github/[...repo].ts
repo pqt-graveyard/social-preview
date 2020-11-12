@@ -3,7 +3,7 @@ import Jimp from 'jimp';
 import { NextApiRequest, NextApiResponse } from 'next';
 import seedrandom from 'seedrandom';
 import YAML from 'yaml';
-import { generateQueryParameterErrorMessage } from '../../../data/errorMessages';
+import { errorMessages, generateQueryParameterErrorMessage } from '../../../data/errorMessages';
 
 const fromAWS = (path: string) => 'https://s3.ca-central-1.amazonaws.com/austinpaquette.com'.concat(path);
 
@@ -413,9 +413,9 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
     }
   } catch (error) {
     console.log(error);
-    response.status(500).json({
+    response.status(error.status).json({
       data: {
-        error,
+        error: errorMessages[error.status],
       },
     });
   }
