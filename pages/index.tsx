@@ -63,7 +63,7 @@ export default function IndexPage(): ReactElement {
 
     const parameters = {
       responseType: 'json',
-      ...(darkmode && { darkmode }),
+      ...(darkmode && { display: 'dark' }),
       dots: squares ? 'square' : 'circle',
       colors: colors ? 'repository' : 'system',
       ...(seed && customSeed && { seed: customSeed }),
