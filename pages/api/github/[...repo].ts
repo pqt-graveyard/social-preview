@@ -87,7 +87,6 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
      * Incoming Query Parameter: Determines whether the base is dark or light (and the foreground is the opposite)
      */
     const displayParameter = (request.query.display as string) || 'light';
-    console.log(displayParameter);
     /**
      * Immediately throw if an invalid image type is requested
      */
