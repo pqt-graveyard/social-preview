@@ -56,9 +56,8 @@ const hexToRgb = (hex: string): Nullable<RGB> => {
 
 const acceptableParameters = {
   dots: ['circle', 'square'],
-  /* eslint-disable @typescript-eslint/camelcase */
-  response_type: ['image', 'json'],
-  /* eslint-enable @typescript-eslint/camelcase */
+  display: ['dark', 'light'],
+  responseType: ['image', 'json'],
 };
 
 export default async (request: NextApiRequest, response: NextApiResponse): Promise<void> => {
@@ -85,26 +84,39 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
     // const colors: Nullable<string> = (request.query.colors as string) || null;
 
     /**
+     * Incoming Query Parameter: Determines whether the base is dark or light (and the foreground is the opposite)
+     */
+    const displayParameter = (request.query.display as string) || 'light';
+    console.log(displayParameter);
+    /**
+     * Immediately throw if an invalid image type is requested
+     */
+    if (!acceptableParameters.display.includes(displayParameter)) {
+      throw generateQueryParameterErrorMessage('display', acceptableParameters.display, 'light');
+    }
+
+    /**
      * Incoming Query Parameter: Determines whether the dots are squares or circles
      */
     const dotTypeParameter = (request.query.dots as string) || 'circle';
 
     /**
-     * Immediately throw if an invalid image type is requested
+     * Immediately throw if an invalid parameter value is requested
      */
     if (!acceptableParameters.dots.includes(dotTypeParameter)) {
       throw generateQueryParameterErrorMessage('dots', acceptableParameters.dots, 'circle');
     }
+
     /**
      * Incoming Query Parameter: Determines how the API responds to the request. JSON or Image
      */
-    const responseTypeParameter = (request.query.response_type as string) || 'json';
+    const responseTypeParameter = (request.query.responseType as string) || 'json';
 
     /**
-     * Immediately throw if an invalid image type is requested
+     * Immediately throw if an invalid parameter value is requested
      */
-    if (!acceptableParameters.response_type.includes(responseTypeParameter)) {
-      throw generateQueryParameterErrorMessage('response_type', acceptableParameters.response_type, 'json');
+    if (!acceptableParameters.responseType.includes(responseTypeParameter)) {
+      throw generateQueryParameterErrorMessage('responseType', acceptableParameters.responseType, 'json');
     }
 
     /**
@@ -160,7 +172,10 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
      * Remote Template Images
      */
     const template = {
-      base: await Jimp.read(fromAWS('/meta/base.png')),
+      base:
+        displayParameter === 'light'
+          ? await Jimp.read(fromAWS('/meta/base.png'))
+          : await Jimp.read(fromAWS('/meta/base_dark.png')),
       dot:
         dotTypeParameter === 'circle'
           ? await Jimp.read(fromAWS('/meta/dot_black.png'))
@@ -169,15 +184,23 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
       circle: await Jimp.read(fromAWS('/meta/dot_black.png')),
       square: await Jimp.read(fromAWS('/meta/square_black.png')),
 
-      githubLogo: await Jimp.read('https://s3-us-west-2.amazonaws.com/s.cdpn.io/209282/github-logo.png'),
+      githubLogo:
+        displayParameter === 'light'
+          ? await Jimp.read(fromAWS('/meta/github_black.png'))
+          : await Jimp.read(fromAWS('/meta/github_white.png')),
     };
 
     /**
      * Font family used for writing
      */
-    const font = await Jimp.loadFont(
-      'https://unpkg.com/@jimp/plugin-print@0.10.3/fonts/open-sans/open-sans-64-black/open-sans-64-black.fnt'
-    );
+    const font =
+      displayParameter === 'light'
+        ? await Jimp.loadFont(
+            'https://unpkg.com/@jimp/plugin-print@0.10.3/fonts/open-sans/open-sans-64-black/open-sans-64-black.fnt'
+          )
+        : await Jimp.loadFont(
+            'https://unpkg.com/@jimp/plugin-print@0.10.3/fonts/open-sans/open-sans-64-white/open-sans-64-white.fnt'
+          );
     // const fontSm = await Jimp.loadFont(
     //   'https://unpkg.com/@jimp/plugin-print@0.10.3/fonts/open-sans/open-sans-32-black/open-sans-32-black.fnt'
     // );
@@ -413,7 +436,16 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
     }
   } catch (error) {
     console.log(error);
-    response.status(error.status).json({
+
+    if (!error.status) {
+      return response.json({
+        data: {
+          error,
+        },
+      });
+    }
+
+    return response.status(error.status).json({
       data: {
         error: errorMessages[error.status],
       },

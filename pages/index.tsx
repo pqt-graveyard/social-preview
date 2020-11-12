@@ -58,19 +58,19 @@ export default function IndexPage(): ReactElement {
     setCustomSeed(event.currentTarget.value);
   };
 
-  const onSubmit = handleSubmit(async ({ owner, repo, token }) => {
-    let endpoint = `/api/github/${owner}/${repo}`;
+  const onSubmit = handleSubmit(async ({ owner, repo }) => {
+    const endpoint = `/api/github/${owner}/${repo}`;
 
-    if (token) {
-      endpoint = endpoint.concat(`?token=${token}`);
-    }
+    const parameters = {
+      responseType: 'json',
+      ...(darkmode && { darkmode }),
+      dots: squares ? 'square' : 'circle',
+      colors: colors ? 'repository' : 'system',
+      ...(seed && customSeed && { seed: customSeed }),
+      ...(token && customToken && { token: customToken }),
+    };
 
-    const parameters = { key: 'value' };
-    querystring.stringify(parameters);
-
-    console.log(querystring);
-
-    const response = await fetch(endpoint.toString());
+    const response = await fetch(endpoint.concat(`?${querystring.stringify(parameters)}`));
     const { data } = await response.json();
 
     setShowNotification(false);
