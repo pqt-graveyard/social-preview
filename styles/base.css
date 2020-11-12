@@ -13,7 +13,8 @@ body,
 
 body,
 #__next {
-  background: #fff;
+  @apply bg-gray-100;
+
   min-height: 100%;
   font-weight: 400;
   font-style: normal;
@@ -21,8 +22,8 @@ body,
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  -webkit-font-feature-settings: "pnum";
-  font-feature-settings: "pnum";
+  -webkit-font-feature-settings: 'pnum';
+  font-feature-settings: 'pnum';
   font-variant-numeric: proportional-nums;
 }
 
