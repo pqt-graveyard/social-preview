@@ -7,6 +7,7 @@ import { generateQueryParameterErrorMessage } from '../../../data/errorMessages'
 
 const fromAWS = (path: string) => 'https://s3.ca-central-1.amazonaws.com/austinpaquette.com'.concat(path);
 
+/* eslint-disable unicorn/no-for-loop */
 const weightedRandom = (items: [string, number][], randomizer: () => number = Math.random) => {
   // First, we loop the main dataset to count up the total weight. We're starting the counter at one because the upper boundary of Math.random() is exclusive.
   let total = 1;
@@ -34,6 +35,7 @@ const weightedRandom = (items: [string, number][], randomizer: () => number = Ma
     }
   }
 };
+/* eslint-enable unicorn/no-for-loop */
 
 const hexToRgb = (hex: string): Nullable<RGB> => {
   // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
@@ -54,7 +56,9 @@ const hexToRgb = (hex: string): Nullable<RGB> => {
 
 const acceptableParameters = {
   dots: ['circle', 'square'],
+  /* eslint-disable @typescript-eslint/camelcase */
   response_type: ['image', 'json'],
+  /* eslint-enable @typescript-eslint/camelcase */
 };
 
 export default async (request: NextApiRequest, response: NextApiResponse): Promise<void> => {
@@ -304,7 +308,7 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
        * Randomly select the language key we want to use to fetch our color.
        * Provide preference to the language-byte-counter provided by GitHub.
        */
-      const colorLanguageKey = weightedRandom(Object.entries(languages), random) as keyof typeof languageColors;
+      const colorLanguageKey = weightedRandom(Object.entries(languages), random) as string;
 
       /**
        * If it exists, pluck the Hexidecimal code we need for the language key randomly picked
@@ -402,6 +406,7 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
     } else {
       return response.status(200).json({
         data: {
+          id: repository.id,
           image: await image.getBase64Async(Jimp.MIME_PNG),
         },
       });

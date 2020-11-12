@@ -17,12 +17,12 @@ export const generateQueryParameterErrorMessage = (
   acceptableParameters?: string[],
   defaultParameter?: string
 ) => {
-  const [baseMessage, acceptableParamMessage, defaultParamMessage] = [
+  const [baseMessage, acceptableParameterMessage, defaultParameterMessage] = [
     `Query Parameter [${name}] is invalid.`,
     typeof acceptableParameters !== 'undefined' &&
       `If defined it must be one of: ${[...acceptableParameters].join(', ')}.`,
     typeof defaultParameter !== 'undefined' && `(default: ${defaultParameter})`,
   ];
 
-  return [baseMessage, acceptableParamMessage, defaultParamMessage].filter(Boolean).join(' ');
+  return [baseMessage, acceptableParameterMessage, defaultParameterMessage].filter(Boolean).join(' ');
 };
