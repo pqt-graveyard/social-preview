@@ -466,7 +466,12 @@ export default function IndexPage(): ReactElement {
                             ></span>
                           </span>
                         </li>
-                        <li className="py-4 flex items-center justify-between space-x-4">
+                        <li
+                          className={classNames(
+                            // "flex",
+                            'hidden py-4 items-center justify-between space-x-4'
+                          )}
+                        >
                           <div className="flex flex-col">
                             <p id="privacy-option-label-2" className="text-sm leading-5 font-medium text-gray-900">
                               Repository Colors
