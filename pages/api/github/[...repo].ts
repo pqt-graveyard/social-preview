@@ -1,5 +1,5 @@
 import { Octokit } from '@octokit/rest';
-import Jimp from 'Jimp';
+import Jimp from 'jimp';
 import { NextApiRequest, NextApiResponse } from 'next';
 import seedrandom from 'seedrandom';
 import YAML from 'yaml';
