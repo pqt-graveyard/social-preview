@@ -220,14 +220,22 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
     /**
      * Font family used for writing
      */
+    // const font =
+    //   displayParameter === 'light'
+    //     ? await Jimp.loadFont(
+    //         'https://unpkg.com/@jimp/plugin-print@0.10.3/fonts/open-sans/open-sans-64-black/open-sans-64-black.fnt'
+    //       )
+    //     : await Jimp.loadFont(
+    //         'https://unpkg.com/@jimp/plugin-print@0.10.3/fonts/open-sans/open-sans-64-white/open-sans-64-white.fnt'
+    //       );
+    // const font =
+    //   displayParameter === 'light'
+    //     ? await Jimp.loadFont(fromAWS('/meta/fonts/Inter-Bold.ttf.fnt'))
+    //     : await Jimp.loadFont(fromAWS('/meta/fonts/Inter-Bold.ttf.fnt'));
     const font =
       displayParameter === 'light'
-        ? await Jimp.loadFont(
-            'https://unpkg.com/@jimp/plugin-print@0.10.3/fonts/open-sans/open-sans-64-black/open-sans-64-black.fnt'
-          )
-        : await Jimp.loadFont(
-            'https://unpkg.com/@jimp/plugin-print@0.10.3/fonts/open-sans/open-sans-64-white/open-sans-64-white.fnt'
-          );
+        ? await Jimp.loadFont(fromAWS('/meta/fonts/48/Inter-Bold.ttf.fnt'))
+        : await Jimp.loadFont(fromAWS('/meta/fonts/48/Inter-Bold.ttf.fnt'));
     // const fontSm = await Jimp.loadFont(
     //   'https://unpkg.com/@jimp/plugin-print@0.10.3/fonts/open-sans/open-sans-32-black/open-sans-32-black.fnt'
     // );
