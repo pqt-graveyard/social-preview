@@ -2,6 +2,7 @@ import { darkCirclesRepository } from './previews/darkCirclesRepository';
 import { darkCirclesSystem } from './previews/darkCirclesSystem';
 import { darkSquaresRepository } from './previews/darkSquaresRepository';
 import { darkSquaresSystem } from './previews/darkSquaresSystem';
+import { legacyPreview } from './previews/legacy';
 import { lightCirclesRepository } from './previews/lightCirclesRepository';
 import { lightCirclesSystem } from './previews/lightCirclesSystem';
 import { lightSquaresRepository } from './previews/lightSquaresRepository';
@@ -28,4 +29,6 @@ export const previews = {
       system: darkSquaresSystem,
     },
   },
+
+  legacy: legacyPreview,
 };

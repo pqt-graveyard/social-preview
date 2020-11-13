@@ -468,6 +468,11 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
         data: {
           id: repository.id,
           image: await image.getBase64Async(Jimp.MIME_PNG),
+          owner,
+          repo,
+          darkmode: displayParameter === 'dark',
+          squares: dotTypeParameter === 'squares',
+          colors,
         },
       });
     }
