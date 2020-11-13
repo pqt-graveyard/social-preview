@@ -88,7 +88,7 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
     /**
      * Incoming Query Parameter: Determines whether to generate the image with repository colors or system-provided ones
      */
-    const colors: Nullable<string> = (request.query.colors as string) || 'repository';
+    let colors: Nullable<string> = (request.query.colors as string) || 'repository';
 
     /**
      * Immediately throw if an invalid parameter value is requested
@@ -162,27 +162,31 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
         owner,
         repo,
       });
-      languages = data as Languages;
+      if (Object.keys(data).length === 0) {
+        colors = 'system';
+      } else {
+        languages = data as Languages;
 
-      /**
-       * Fetch the GitHub language colors source-of-truth
-       */
-      const { data: linguistInitial } = await octokit.repos.getContents({
-        owner: 'github',
-        repo: 'linguist',
-        path: 'lib/linguist/languages.yml',
-        mediaType: {
-          format: 'base64',
-        },
-      });
+        /**
+         * Fetch the GitHub language colors source-of-truth
+         */
+        const { data: linguistInitial } = await octokit.repos.getContents({
+          owner: 'github',
+          repo: 'linguist',
+          path: 'lib/linguist/languages.yml',
+          mediaType: {
+            format: 'base64',
+          },
+        });
 
-      /**
-       * Create a Buffer for the linguistInitial content
-       * Parse the YML file so we can extract the colors we need from it later
-       */
-      const linguistContent = linguistInitial as { content: string };
-      const linguistBuffer = Buffer.from(linguistContent.content as string, 'base64');
-      linguist = YAML.parse(linguistBuffer.toString('utf-8')) as Linguist;
+        /**
+         * Create a Buffer for the linguistInitial content
+         * Parse the YML file so we can extract the colors we need from it later
+         */
+        const linguistContent = linguistInitial as { content: string };
+        const linguistBuffer = Buffer.from(linguistContent.content as string, 'base64');
+        linguist = YAML.parse(linguistBuffer.toString('utf-8')) as Linguist;
+      }
     }
 
     /**
@@ -227,6 +231,14 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
     // const fontSm = await Jimp.loadFont(
     //   'https://unpkg.com/@jimp/plugin-print@0.10.3/fonts/open-sans/open-sans-32-black/open-sans-32-black.fnt'
     // );
+    const fontSm =
+      displayParameter === 'light'
+        ? await Jimp.loadFont(
+            'https://unpkg.com/@jimp/plugin-print@0.10.3/fonts/open-sans/open-sans-32-black/open-sans-32-black.fnt'
+          )
+        : await Jimp.loadFont(
+            'https://unpkg.com/@jimp/plugin-print@0.10.3/fonts/open-sans/open-sans-32-white/open-sans-32-white.fnt'
+          );
 
     /**
      * Required Image Dimensions
@@ -426,35 +438,84 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
     const protectedAreaImage = template.base.clone().resize(protectedAreaImageWidth, protectedAreaImageHeight);
 
     /**
-     * Find the Boundaries of the text that's about to be written on the image
+     * If the full name doesn't bleed outside of the boundaries
      */
-    const textWidth = Jimp.measureText(font, repository.full_name);
-    const textHeight = Jimp.measureTextHeight(font, repository.full_name, protectedAreaImageWidth);
+    if (Jimp.measureText(font, repository.full_name) + spacing + 128 <= protectedAreaImageWidth) {
+      /**
+       * Find the Boundaries of the text that's about to be written on the image
+       */
+      const textWidth = Jimp.measureText(font, repository.full_name);
+      const textHeight = Jimp.measureTextHeight(font, repository.full_name, protectedAreaImageWidth);
 
-    /**
-     * Apply Title
-     */
-    protectedAreaImage.print(
-      font,
-      protectedAreaImageWidth / 2 - textWidth / 2 + (128 + 40) / 2,
-      protectedAreaImageHeight / 2 - textHeight / 2,
-      {
-        text: repository.full_name,
-        // alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
-        alignmentX: 0,
-      },
-      width - spacing * 2,
-      height - spacing * 2
-    );
+      /**
+       * Apply Title
+       */
+      protectedAreaImage.print(
+        font,
+        protectedAreaImageWidth / 2 - textWidth / 2 + (128 + spacing) / 2,
+        protectedAreaImageHeight / 2 - textHeight / 2,
+        { text: repository.full_name },
+        width - spacing * 2,
+        height - spacing * 2
+      );
 
-    /**
-     * Place the protected area image onto the protected area
-     */
-    protectedAreaImage.composite(
-      template.githubLogo,
-      450 - 128 / 2 - textWidth / 2 - 40,
-      protectedAreaImageHeight / 2 - 128 / 2
-    );
+      /**
+       * Place the protected area image onto the protected area
+       */
+      protectedAreaImage.composite(
+        template.githubLogo,
+        450 - 128 / 2 - textWidth / 2 - 40,
+        protectedAreaImageHeight / 2 - 128 / 2
+      );
+    } else {
+      /**
+       * Find the Boundaries of the text that's about to be written on the image
+       */
+      const textWidth = Jimp.measureText(font, repository.name);
+      const textHeight = Jimp.measureTextHeight(font, repository.name, protectedAreaImageWidth);
+
+      /**
+       * Alignment Helpers
+       */
+      const textHorizontalAlignment = protectedAreaImageWidth / 2 - textWidth / 2 + (128 + spacing) / 2;
+      const textVerticalAlignment = protectedAreaImageHeight / 2 - textHeight / 2;
+
+      /**
+       * Apply Owner
+       */
+      protectedAreaImage.print(
+        fontSm,
+        textHorizontalAlignment,
+        textVerticalAlignment - 14,
+        { text: repository.owner.login },
+        width - spacing * 2,
+        height - spacing * 2
+      );
+
+      /**
+       * Apply Repository
+       */
+      protectedAreaImage
+        .print(
+          font,
+          textHorizontalAlignment,
+          textVerticalAlignment + 14,
+          { text: repository.name },
+          width - spacing * 2,
+          height - spacing * 2
+        )
+        .scale(0.8);
+
+      /**
+       * Place the protected area image onto the protected area
+       */
+      protectedAreaImage.composite(
+        template.githubLogo,
+        450 - 128 / 2 - textWidth / 2 - 40,
+        protectedAreaImageHeight / 2 - 128 / 2
+      );
+    }
+
     image.composite(protectedAreaImage, 200, 200);
 
     if (responseTypeParameter === 'image') {
@@ -467,12 +528,12 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
       return response.status(200).json({
         data: {
           id: repository.id,
-          image: await image.getBase64Async(Jimp.MIME_PNG),
           owner,
           repo,
           darkmode: displayParameter === 'dark',
           squares: dotTypeParameter === 'squares',
-          colors,
+          colors: colors === 'repository',
+          image: await image.getBase64Async(Jimp.MIME_PNG),
         },
       });
     }

@@ -26,3 +26,15 @@ type Linguist = {
 type Languages = {
   [key: string]: number
  }
+
+ type SocialPreview = {
+   error?: string
+   
+   id: number
+   owner: string
+   repo: string
+   darkmode: boolean
+   squares: boolean
+   colors: boolean
+   image: string
+ }

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { ChangeEvent, ReactElement, useEffect, useState } from 'react';
+import React, { ChangeEvent, FC, ReactElement, useEffect, useState } from 'react';
 import { FieldError, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { Layout } from '../components/Layout';
@@ -27,11 +27,17 @@ export default function IndexPage(): ReactElement {
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState('');
 
+  // History
+  const [userGenerated, setUserGenerated] = useState(false);
+  const [history, setHistory] = useState<SocialPreview[]>([]);
+
   useEffect(() => {
     if (preview === '') {
       setPreview(previews.light.circles.repository);
       return;
     }
+
+    if (userGenerated) return;
 
     switch (true) {
       case darkmode === false && squares === false && colors === false:
@@ -66,14 +72,6 @@ export default function IndexPage(): ReactElement {
         setPreview(previews.dark.squares.repository);
         break;
     }
-
-    // let previewId = 0;
-
-    // if (darkmode) previewId += 100;
-    // if (squares) previewId += 10;
-    // if (colors) previewId += 1;
-
-    // setPreview(previews[previewId.toString() as keyof typeof previews]);
   }, [preview, darkmode, squares, colors]);
 
   const validationSchema = yup.object().shape({
@@ -113,15 +111,17 @@ export default function IndexPage(): ReactElement {
       ...(token && customToken && { token: customToken }),
     };
 
-    const response = await fetch(endpoint.concat(`?${querystring.stringify(parameters)}`));
-    const { data } = await response.json();
-
     setShowNotification(false);
     setNotificationMessage('');
 
+    const response = await fetch(endpoint.concat(`?${querystring.stringify(parameters)}`));
+    const { data } = (await response.json()) as { data: SocialPreview };
+
     if (!data.error) {
+      setUserGenerated(true);
       setPreview(data.image);
-      setRepoId(data.id);
+      setRepoId(data.id.toString());
+      setHistory([data, ...history]);
     } else {
       setNotificationMessage(data.error);
       setShowNotification(true);
@@ -436,7 +436,7 @@ export default function IndexPage(): ReactElement {
                   </div>
 
                   {/* Generate and Download Buttons */}
-                  <div className="sticky top-0 bg-white py-4 flex justify-end space-x-5">
+                  <div className="py-4 flex justify-end space-x-5">
                     <div className="flex-1 flex space-x-4">
                       <span className="inline-flex rounded-md shadow-sm">
                         <button
@@ -454,7 +454,7 @@ export default function IndexPage(): ReactElement {
                           repoId ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 pointer-events-none',
                         ])}
                         href={preview}
-                        download={`${owner}-${repo}.png`}
+                        download={`${owner}-${repo}-${darkmode === true ? 'dark' : 'light'}.png`}
                       >
                         Download
                       </a>
@@ -667,31 +667,55 @@ export default function IndexPage(): ReactElement {
 
           {/* <!-- Activity feed --> */}
           <div className="bg-gray-50 pr-4 sm:pr-6 lg:pr-8 lg:flex-shrink-0 lg:border-l lg:border-gray-200 xl:pr-0">
-            <div className="invisible pl-6 lg:w-80">
+            <div
+              className={classNames([
+                'pl-6 lg:w-80 transition-opacity duration-300',
+                history.length === 0 ? 'opacity-0' : 'opacity-100',
+              ])}
+            >
               <div className="pt-6 pb-2">
                 <h2 className="text-sm leading-5 font-semibold text-gray-500">History</h2>
               </div>
               <div>
-                <ul className="divide-y divide-gray-200">
-                  <li className="py-4 transition duration-500 ease-in-out transform translate-x-8 opacity-0 hover:opacity-100 hover:translate-x-0">
-                    <div className="flex space-x-3">
-                      <img
-                        className="h-6 w-6 rounded-full"
-                        src="https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=256&h=256&q=80"
-                        alt=""
-                      />
-                      <div className="flex-1 space-y-1">
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-sm font-medium leading-5">You</h3>
-                          <p className="text-sm leading-5 text-gray-500">1h</p>
-                        </div>
-                        <p className="text-sm leading-5 text-gray-500">
-                          Deployed Workcation (2d89f0c8 in master) to production
-                        </p>
-                      </div>
-                    </div>
-                  </li>
-                </ul>
+                {history.length > 0 && (
+                  <ul className="divide-y divide-gray-200">
+                    {console.log(history)}
+                    {history.map(({ id, owner, repo, darkmode, squares, colors, image }, index) => {
+                      return (
+                        <li key={`${id}-${index}`} className="py-4">
+                          <div className="flex space-x-3">
+                            <div className="flex-1 space-y-2">
+                              <div className="relative inline-flex shadow-sm rounded border border-gray-300 bg-gray-100 p-1 md:p-2 overflow-hidden items-center">
+                                <img className="w-full rounded border bg-gray-300" src={image} alt="" />
+                              </div>
+                              <div className="space-y-1">
+                                <div className="flex items-center justify-between">
+                                  <h3 className="text-sm font-medium leading-5">
+                                    {owner}/{repo}
+                                  </h3>
+                                </div>
+                                <div>
+                                  <p className="flex justify-between text-xs leading-5 text-gray-500">
+                                    <div>Darkmode:</div>
+                                    <div>{darkmode ? 'Yes' : 'No'}</div>
+                                  </p>
+                                  <p className="flex justify-between text-xs leading-5 text-gray-500">
+                                    <div>Squares:</div>
+                                    <div>{squares ? 'Yes' : 'No'}</div>
+                                  </p>
+                                  <p className="flex justify-between text-xs leading-5 text-gray-500">
+                                    <div>Repository Colors </div>
+                                    <div>{colors ? 'Yes' : 'No'}</div>
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
               </div>
             </div>
           </div>
