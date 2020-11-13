@@ -1,11 +1,11 @@
 import classNames from 'classnames';
-import React, { ChangeEvent, FC, ReactElement, useEffect, useState } from 'react';
+import querystring from 'querystring';
+import React, { ChangeEvent, ReactElement, useEffect, useState } from 'react';
 import { FieldError, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { Layout } from '../components/Layout';
-import { previews } from '../data/defaultPreviews';
 import { Spinner } from '../components/loaders/Spinner';
-import querystring from 'querystring';
+import { previews } from '../data/defaultPreviews';
 
 export default function IndexPage(): ReactElement {
   // Input Fields
@@ -679,7 +679,6 @@ export default function IndexPage(): ReactElement {
               <div>
                 {history.length > 0 && (
                   <ul className="divide-y divide-gray-200">
-                    {console.log(history)}
                     {history.map(({ id, owner, repo, darkmode, squares, colors, image }, index) => {
                       return (
                         <li key={`${id}-${index}`} className="py-4">
@@ -696,16 +695,16 @@ export default function IndexPage(): ReactElement {
                                 </div>
                                 <div>
                                   <p className="flex justify-between text-xs leading-5 text-gray-500">
-                                    <div>Darkmode:</div>
-                                    <div>{darkmode ? 'Yes' : 'No'}</div>
+                                    <span>Darkmode:</span>
+                                    <span>{darkmode ? 'Yes' : 'No'}</span>
                                   </p>
                                   <p className="flex justify-between text-xs leading-5 text-gray-500">
-                                    <div>Squares:</div>
-                                    <div>{squares ? 'Yes' : 'No'}</div>
+                                    <span>Squares:</span>
+                                    <span>{squares ? 'Yes' : 'No'}</span>
                                   </p>
                                   <p className="flex justify-between text-xs leading-5 text-gray-500">
-                                    <div>Repository Colors </div>
-                                    <div>{colors ? 'Yes' : 'No'}</div>
+                                    <span>Repository Colors </span>
+                                    <span>{colors ? 'Yes' : 'No'}</span>
                                   </p>
                                 </div>
                               </div>
