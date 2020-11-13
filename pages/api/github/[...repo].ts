@@ -4,6 +4,12 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import seedrandom from 'seedrandom';
 import YAML from 'yaml';
 import { errorMessages, generateQueryParameterErrorMessage } from '../../../data/errorMessages';
+import { systemColors } from '../../../data/systemColors';
+
+const getGitHubToken = () => {
+  const tokens = [process.env.GITHUB_TOKEN, process.env.GITHUB_TOKEN_2].filter(Boolean);
+  return tokens[Math.floor(Math.random() * tokens.length)];
+};
 
 const fromAWS = (path: string) => 'https://s3.ca-central-1.amazonaws.com/austinpaquette.com'.concat(path);
 
@@ -55,6 +61,7 @@ const hexToRgb = (hex: string): Nullable<RGB> => {
 };
 
 const acceptableParameters = {
+  colors: ['repository', 'system'],
   dots: ['circle', 'square'],
   display: ['dark', 'light'],
   responseType: ['image', 'json'],
@@ -79,16 +86,30 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
     const seed: Nullable<string> = (request.query.seed as string) || null;
 
     /**
-     * Comma-separate values of hexidecimal colors that will be used on the generated image
+     * Incoming Query Parameter: Determines whether to generate the image with repository colors or system-provided ones
      */
-    // const colors: Nullable<string> = (request.query.colors as string) || null;
+    const colors: Nullable<string> = (request.query.colors as string) || 'repository';
+
+    /**
+     * Immediately throw if an invalid parameter value is requested
+     */
+    if (!acceptableParameters.colors.includes(colors)) {
+      throw generateQueryParameterErrorMessage('colors', acceptableParameters.colors, 'repository');
+    }
+
+    /**
+     * Conditionally used variable (only used if the colors param is set to repository)
+     */
+    let linguist: Linguist;
+    let languages: Languages;
 
     /**
      * Incoming Query Parameter: Determines whether the base is dark or light (and the foreground is the opposite)
      */
     const displayParameter = (request.query.display as string) || 'light';
+
     /**
-     * Immediately throw if an invalid image type is requested
+     * Immediately throw if an invalid parameter value is requested
      */
     if (!acceptableParameters.display.includes(displayParameter)) {
       throw generateQueryParameterErrorMessage('display', acceptableParameters.display, 'light');
@@ -122,7 +143,7 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
      * Instantiate the GitHub API Client
      */
     const octokit = new Octokit({
-      auth: token || process.env.GITHUB_TOKEN,
+      auth: token || getGitHubToken(),
     });
 
     /**
@@ -133,33 +154,36 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
       repo,
     });
 
-    /**
-     * Fetch the GitHub Respository Language Data
-     */
-    const { data: languages } = await octokit.repos.listLanguages({
-      owner,
-      repo,
-    });
+    if (colors === 'repository') {
+      /**
+       * Fetch the GitHub Respository Language Data
+       */
+      const { data } = await octokit.repos.listLanguages({
+        owner,
+        repo,
+      });
+      languages = data as Languages;
 
-    /**
-     * Fetch the GitHub language colors source-of-truth
-     */
-    const { data: linguistInitial } = await octokit.repos.getContents({
-      owner: 'github',
-      repo: 'linguist',
-      path: 'lib/linguist/languages.yml',
-      mediaType: {
-        format: 'base64',
-      },
-    });
+      /**
+       * Fetch the GitHub language colors source-of-truth
+       */
+      const { data: linguistInitial } = await octokit.repos.getContents({
+        owner: 'github',
+        repo: 'linguist',
+        path: 'lib/linguist/languages.yml',
+        mediaType: {
+          format: 'base64',
+        },
+      });
 
-    /**
-     * Create a Buffer for the linguistInitial content
-     * Parse the YML file so we can extract the colors we need from it later
-     */
-    const linguistContent = linguistInitial as { content: string };
-    const linguistBuffer = Buffer.from(linguistContent.content as string, 'base64');
-    const linguist = YAML.parse(linguistBuffer.toString('utf-8'));
+      /**
+       * Create a Buffer for the linguistInitial content
+       * Parse the YML file so we can extract the colors we need from it later
+       */
+      const linguistContent = linguistInitial as { content: string };
+      const linguistBuffer = Buffer.from(linguistContent.content as string, 'base64');
+      linguist = YAML.parse(linguistBuffer.toString('utf-8')) as Linguist;
+    }
 
     /**
      * Initialize the random function with a custom seed so it's consistent
@@ -303,28 +327,15 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
     };
 
     /**
-     * Reducer Function for applying the dynamic generation logic to each dot
+     * Color Generation Helper Function
      */
-    const dotReducer = (_: unknown, __: unknown, index: number): void => {
-      /**
-       * If the index is within a protected area we already know to stop.
-       * Nothing will be added in the protected region.
-       */
-      if (isProtectedArea(index)) return;
+    const getDotColor = (): RGB => {
+      if (colors === 'system') {
+        const hexColor = systemColors[Math.floor(random() * systemColors.length)];
+        const color = hexToRgb(hexColor);
 
-      /**
-       * If we randomly generate a number between 1 and 100 and it's 80 or greater, let's just skip.
-       * This reduces needlessly large amounts of squares from being added in a somewhat controlled way.
-       * This basically gives us a percentage of reduction.
-       */
-      const reduction = 80;
-      // const reduction = 0;
-      if (Math.floor(random() * 100) + 1 >= 100 - reduction) return;
-
-      /**
-       * If we haven't returned already, we're ready to proceed.
-       */
-      const dot = template.dot.clone();
+        return color as RGB;
+      }
 
       /**
        * Randomly select the language key we want to use to fetch our color.
@@ -356,10 +367,37 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
         color = hexToRgb('cccccc') as RGB;
       }
 
+      return color;
+    };
+
+    /**
+     * Reducer Function for applying the dynamic generation logic to each dot
+     */
+    const dotReducer = (_: unknown, __: unknown, index: number): void => {
+      /**
+       * If the index is within a protected area we already know to stop.
+       * Nothing will be added in the protected region.
+       */
+      if (isProtectedArea(index)) return;
+
+      /**
+       * If we randomly generate a number between 1 and 100 and it's 80 or greater, let's just skip.
+       * This reduces needlessly large amounts of squares from being added in a somewhat controlled way.
+       * This basically gives us a percentage of reduction.
+       */
+      const reduction = 80;
+      // const reduction = 0;
+      if (Math.floor(random() * 100) + 1 >= 100 - reduction) return;
+
+      /**
+       * If we haven't returned already, we're ready to proceed.
+       */
+      const dot = template.dot.clone();
+
       /**
        * Destructure the color and apply it to the square
        */
-      const { red, green, blue } = color;
+      const { red, green, blue } = getDotColor();
       dot.color([
         { apply: 'red', params: [red] },
         { apply: 'green', params: [green] },
@@ -434,6 +472,7 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
       });
     }
   } catch (error) {
+    console.log(error.status);
     console.log(error);
 
     if (!error.status) {
