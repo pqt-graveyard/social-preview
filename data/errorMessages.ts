@@ -3,6 +3,7 @@ type ErrorMessageType = {
 };
 
 export const errorMessages: ErrorMessageType = {
+  403: 'GitHub API rate limit exceeded. You can either provide your own Personal Access Token to bypass this, or wait a few moments and try again.',
   404: 'Make sure you entered the correct details. The repository must either be public, or (if one is provided) accessible with the personal access token.',
 };
 

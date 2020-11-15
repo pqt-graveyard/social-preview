@@ -1,11 +1,11 @@
 import classNames from 'classnames';
+import querystring from 'querystring';
 import React, { ChangeEvent, ReactElement, useEffect, useState } from 'react';
 import { FieldError, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { Layout } from '../components/Layout';
-import { previews } from '../data/defaultPreviews';
 import { Spinner } from '../components/loaders/Spinner';
-import querystring from 'querystring';
+import { previews } from '../data/defaultPreviews';
 
 export default function IndexPage(): ReactElement {
   // Input Fields
@@ -23,15 +23,56 @@ export default function IndexPage(): ReactElement {
 
   // Display State
   const [repoId, setRepoId] = useState('');
-  const [preview, setPreview] = useState(previews.base);
+  const [preview, setPreview] = useState(previews.light.circles.repository);
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState('');
 
+  // History
+  const [userGenerated, setUserGenerated] = useState(false);
+  const [history, setHistory] = useState<SocialPreview[]>([]);
+
   useEffect(() => {
     if (preview === '') {
-      setPreview(previews.base);
+      setPreview(previews.light.circles.repository);
+      return;
     }
-  }, [preview]);
+
+    if (userGenerated) return;
+
+    switch (true) {
+      case darkmode === false && squares === false && colors === false:
+        setPreview(previews.light.circles.system);
+        break;
+
+      case darkmode === false && squares === false && colors === true:
+        setPreview(previews.light.circles.repository);
+        break;
+
+      case darkmode === false && squares === true && colors === false:
+        setPreview(previews.light.squares.system);
+        break;
+
+      case darkmode === false && squares === true && colors === true:
+        setPreview(previews.light.squares.repository);
+        break;
+
+      case darkmode === true && squares === false && colors === false:
+        setPreview(previews.dark.circles.system);
+        break;
+
+      case darkmode === true && squares === false && colors === true:
+        setPreview(previews.dark.circles.repository);
+        break;
+
+      case darkmode === true && squares === true && colors === false:
+        setPreview(previews.dark.squares.system);
+        break;
+
+      case darkmode === true && squares === true && colors === true:
+        setPreview(previews.dark.squares.repository);
+        break;
+    }
+  }, [preview, darkmode, squares, colors]);
 
   const validationSchema = yup.object().shape({
     owner: yup.string().required('Owner (or Organization) is required'),
@@ -70,15 +111,17 @@ export default function IndexPage(): ReactElement {
       ...(token && customToken && { token: customToken }),
     };
 
-    const response = await fetch(endpoint.concat(`?${querystring.stringify(parameters)}`));
-    const { data } = await response.json();
-
     setShowNotification(false);
     setNotificationMessage('');
 
+    const response = await fetch(endpoint.concat(`?${querystring.stringify(parameters)}`));
+    const { data } = (await response.json()) as { data: SocialPreview };
+
     if (!data.error) {
+      setUserGenerated(true);
       setPreview(data.image);
-      setRepoId(data.id);
+      setRepoId(data.id.toString());
+      setHistory([data, ...history]);
     } else {
       setNotificationMessage(data.error);
       setShowNotification(true);
@@ -392,11 +435,37 @@ export default function IndexPage(): ReactElement {
                     </div>
                   </div>
 
+                  {/* Generate and Download Buttons */}
+                  <div className="py-4 flex justify-end space-x-5">
+                    <div className="flex-1 flex space-x-4">
+                      <span className="inline-flex rounded-md shadow-sm">
+                        <button
+                          type="submit"
+                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:shadow-outline-blue active:bg-blue-700 transition ease-in-out duration-150"
+                          disabled={isSubmitting || !isValid}
+                        >
+                          Generate
+                        </button>
+                      </span>
+
+                      <a
+                        className={classNames([
+                          'inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-50 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-blue-200 transition transform ease-in-out duration-300',
+                          repoId ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 pointer-events-none',
+                        ])}
+                        href={preview}
+                        download={`${owner}-${repo}-${darkmode === true ? 'dark' : 'light'}.png`}
+                      >
+                        Download
+                      </a>
+                    </div>
+                  </div>
+
                   {/* Display section */}
                   <div className="pt-6 space-y-4 divide-y divide-gray-200">
-                    <div className="px-4 space-y-2 sm:px-6">
+                    <div className="space-y-2">
                       <div>
-                        <h2 className="text-lg leading-6 font-medium text-gray-900">Display Configuration</h2>
+                        <h2 className="text-lg leading-6 font-medium text-gray-900">Display Configurations</h2>
                         <p className="mt-1 text-sm leading-5 text-gray-500">
                           Modifications and controls to make it a little bit more unique to you!
                         </p>
@@ -468,8 +537,9 @@ export default function IndexPage(): ReactElement {
                         </li>
                         <li
                           className={classNames(
-                            // "flex",
-                            'hidden py-4 items-center justify-between space-x-4'
+                            'flex',
+                            // "hidde",
+                            'py-4 items-center justify-between space-x-4'
                           )}
                         >
                           <div className="flex flex-col">
@@ -590,32 +660,6 @@ export default function IndexPage(): ReactElement {
                       </ul>
                     </div>
                   </div>
-
-                  {/* Generate and Download Buttons */}
-                  <div className="sticky bottom-0 bg-white py-4 flex justify-end space-x-5">
-                    <div className="flex-1 flex space-x-4">
-                      <span className="inline-flex rounded-md shadow-sm">
-                        <button
-                          type="submit"
-                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:shadow-outline-blue active:bg-blue-700 transition ease-in-out duration-150"
-                          disabled={isSubmitting || !isValid}
-                        >
-                          Generate
-                        </button>
-                      </span>
-
-                      <a
-                        className={classNames([
-                          'inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-50 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-blue-200 transition transform ease-in-out duration-300',
-                          repoId ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 pointer-events-none',
-                        ])}
-                        href={preview}
-                        download={`${owner}-${repo}.png`}
-                      >
-                        Download
-                      </a>
-                    </div>
-                  </div>
                 </form>
               </div>
             </div>
@@ -623,31 +667,54 @@ export default function IndexPage(): ReactElement {
 
           {/* <!-- Activity feed --> */}
           <div className="bg-gray-50 pr-4 sm:pr-6 lg:pr-8 lg:flex-shrink-0 lg:border-l lg:border-gray-200 xl:pr-0">
-            <div className="invisible pl-6 lg:w-80">
+            <div
+              className={classNames([
+                'pl-6 lg:w-80 transition-opacity duration-300',
+                history.length === 0 ? 'opacity-0' : 'opacity-100',
+              ])}
+            >
               <div className="pt-6 pb-2">
                 <h2 className="text-sm leading-5 font-semibold text-gray-500">History</h2>
               </div>
               <div>
-                <ul className="divide-y divide-gray-200">
-                  <li className="py-4 transition duration-500 ease-in-out transform translate-x-8 opacity-0 hover:opacity-100 hover:translate-x-0">
-                    <div className="flex space-x-3">
-                      <img
-                        className="h-6 w-6 rounded-full"
-                        src="https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=256&h=256&q=80"
-                        alt=""
-                      />
-                      <div className="flex-1 space-y-1">
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-sm font-medium leading-5">You</h3>
-                          <p className="text-sm leading-5 text-gray-500">1h</p>
-                        </div>
-                        <p className="text-sm leading-5 text-gray-500">
-                          Deployed Workcation (2d89f0c8 in master) to production
-                        </p>
-                      </div>
-                    </div>
-                  </li>
-                </ul>
+                {history.length > 0 && (
+                  <ul className="divide-y divide-gray-200">
+                    {history.map(({ id, owner, repo, darkmode, squares, colors, image }, index) => {
+                      return (
+                        <li key={`${id}-${index}`} className="py-4">
+                          <div className="flex space-x-3">
+                            <div className="flex-1 space-y-2">
+                              <div className="relative inline-flex shadow-sm rounded border border-gray-300 bg-gray-100 p-1 md:p-2 overflow-hidden items-center">
+                                <img className="w-full rounded border bg-gray-300" src={image} alt="" />
+                              </div>
+                              <div className="space-y-1">
+                                <div className="flex items-center justify-between">
+                                  <h3 className="text-sm font-medium leading-5">
+                                    {owner}/{repo}
+                                  </h3>
+                                </div>
+                                <div>
+                                  <p className="flex justify-between text-xs leading-5 text-gray-500">
+                                    <span>Darkmode:</span>
+                                    <span>{darkmode ? 'Yes' : 'No'}</span>
+                                  </p>
+                                  <p className="flex justify-between text-xs leading-5 text-gray-500">
+                                    <span>Squares:</span>
+                                    <span>{squares ? 'Yes' : 'No'}</span>
+                                  </p>
+                                  <p className="flex justify-between text-xs leading-5 text-gray-500">
+                                    <span>Repository Colors </span>
+                                    <span>{colors ? 'Yes' : 'No'}</span>
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
               </div>
             </div>
           </div>
