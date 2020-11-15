@@ -220,22 +220,14 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
     /**
      * Font family used for writing
      */
-    // const font =
-    //   displayParameter === 'light'
-    //     ? await Jimp.loadFont(
-    //         'https://unpkg.com/@jimp/plugin-print@0.10.3/fonts/open-sans/open-sans-64-black/open-sans-64-black.fnt'
-    //       )
-    //     : await Jimp.loadFont(
-    //         'https://unpkg.com/@jimp/plugin-print@0.10.3/fonts/open-sans/open-sans-64-white/open-sans-64-white.fnt'
-    //       );
-    // const font =
-    //   displayParameter === 'light'
-    //     ? await Jimp.loadFont(fromAWS('/meta/fonts/Inter-Bold.ttf.fnt'))
-    //     : await Jimp.loadFont(fromAWS('/meta/fonts/Inter-Bold.ttf.fnt'));
     const font =
       displayParameter === 'light'
-        ? await Jimp.loadFont(fromAWS('/meta/fonts/48/Inter-Bold.ttf.fnt'))
-        : await Jimp.loadFont(fromAWS('/meta/fonts/48/Inter-Bold.ttf.fnt'));
+        ? await Jimp.loadFont(
+            'https://unpkg.com/@jimp/plugin-print@0.10.3/fonts/open-sans/open-sans-64-black/open-sans-64-black.fnt'
+          )
+        : await Jimp.loadFont(
+            'https://unpkg.com/@jimp/plugin-print@0.10.3/fonts/open-sans/open-sans-64-white/open-sans-64-white.fnt'
+          );
     // const fontSm = await Jimp.loadFont(
     //   'https://unpkg.com/@jimp/plugin-print@0.10.3/fonts/open-sans/open-sans-32-black/open-sans-32-black.fnt'
     // );
@@ -491,28 +483,28 @@ export default async (request: NextApiRequest, response: NextApiResponse): Promi
       /**
        * Apply Owner
        */
-      protectedAreaImage.print(
-        fontSm,
-        textHorizontalAlignment,
-        textVerticalAlignment - 14,
-        { text: repository.owner.login },
-        width - spacing * 2,
-        height - spacing * 2
-      );
+      protectedAreaImage
+        .print(
+          fontSm,
+          textHorizontalAlignment,
+          textVerticalAlignment - 14,
+          { text: repository.owner.login },
+          width - spacing * 2,
+          height - spacing * 2
+        )
+        .opacity(0.7);
 
       /**
        * Apply Repository
        */
-      protectedAreaImage
-        .print(
-          font,
-          textHorizontalAlignment,
-          textVerticalAlignment + 14,
-          { text: repository.name },
-          width - spacing * 2,
-          height - spacing * 2
-        )
-        .scale(0.8);
+      protectedAreaImage.print(
+        font,
+        textHorizontalAlignment,
+        textVerticalAlignment + 14,
+        { text: repository.name },
+        width - spacing * 2,
+        height - spacing * 2
+      );
 
       /**
        * Place the protected area image onto the protected area
