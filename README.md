@@ -1,3 +1,5 @@
+# ⚠️ GitHub has started to make [their own dynamic meta images](https://github.blog/changelog/2021-04-21-opengraph-images-for-github-repositories-commits-issues-and-pull-requests/), this project is being discontinued and archived.
+
 <p align="center">
   <a href="https://social-preview.pqt.dev">
     <img alt="Social Preview" src="https://github.com/pqt/social-preview/blob/main/.github/images/default.png" width="100%" />
